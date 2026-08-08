@@ -4,7 +4,7 @@
 - **Project:** [Kestra](https://github.com/kestra-io/kestra), an event-driven orchestration and scheduling platform (Java backend, Vue 3 frontend)
 - **Issue:** [#8337 — Align the bulk and single execution actions for both Replay and Restart](https://github.com/kestra-io/kestra/issues/8337)
 - **Pull request:** [#16900 — feat(executions): align bulk restart revision picker with bulk replay](https://github.com/kestra-io/kestra/pull/16900)
-- **Status:** Merged into `develop` and QA-verified by a maintainer.
+- **Status:** ✅ **Merged** into `develop` on July 29, 2026 — approved by the frontend and backend maintainers, closing issue #8337.
 
 ## Overview
 
@@ -69,7 +69,7 @@ I followed the project's conventions along the way: Conventional Commits with th
 
 ## Phase IV — Submit and iterate
 
-I opened PR #16900 against `develop` on June 18, 2026, referencing issue #8337, and kept the branch rebased on `develop` rather than using merge commits, per the contributor guidelines. A maintainer reviewed and merged it, and `@Pradumnasaraf` confirmed QA with a screenshot of the new dialog. Merging the PR closed issue #8337.
+I opened PR #16900 against `develop` on June 18, 2026, referencing issue #8337. The change was reviewed in two parts: `@flcarre` approved the frontend on June 19 ("ok for front, thanks and nice work!"), and `@loicmathieu` approved the backend and merged it on July 29 ("LGTM, thanks a lot"), with `@MilosPaunovic` coordinating the review. Because the backend review took several weeks, I kept the branch current with `develop` throughout so it stayed mergeable. Merging the PR closed issue #8337. A full feedback log with dates and commit references is below.
 
 After the change, all four re-run paths offer the same original-vs-latest revision choice:
 
@@ -78,9 +78,25 @@ After the change, all four re-run paths offer the same original-vs-latest revisi
 | Replay  | original and latest  | original and latest            |
 | Restart | original and latest  | original and latest (now fixed) |
 
-## What I learned
+## Maintainer Feedback Log
 
-The most useful thing I did was read the existing bulk Replay code before writing anything, so I could match it instead of guessing at a design. Tracing the bug through the Vue component, the Pinia store, and the Micronaut controller taught me how the frontend and backend hand off to each other, and the store quietly dropping the query params turned out to be the key detail. I also spent real effort matching the project's conventions, which I now see is as much a part of a contribution as the code itself.
+| Date | From | Feedback / event | My response |
+|------|------|------------------|-------------|
+| Jun 18, 2026 | — | Opened PR #16900 against `develop` with two commits: `4cdd300e` (backend `latestRevision` support) and `c1679dc7` (frontend revision-picker dialog). | Referenced `Closes #8337`; documented the change and test evidence. |
+| Jun 19, 2026 | `@MilosPaunovic` | Triaged the PR, added labels `area/frontend` and `kind/external`, and requested a frontend review from `@flcarre`. | No change requested; waited for review. |
+| Jun 19, 2026 | `@flcarre` | Approved the frontend: *"ok for front, thanks and nice work!"* | No changes needed; frontend accepted as-is. |
+| Jul 2 & Jul 22, 2026 | `@MilosPaunovic` | Requested and then re-pinged `@loicmathieu` for the backend review. | Kept the branch current by merging `develop` (Jul 2 and Jul 27) so it stayed conflict-free and mergeable during the wait. |
+| Jul 29, 2026 | `@loicmathieu` | Approved the backend: *"LGTM, thanks a lot"* and **merged** the PR into `develop`. | Merge closed issue #8337; verified the merged behavior against the acceptance criteria. |
+
+No change requests were raised — both reviewers approved on the first pass — so the log reflects approvals plus the branch-maintenance work needed to keep a PR mergeable through a multi-week backend-review queue.
+
+## Learnings & Reflections
+
+**Technical gains.** The most useful thing I did was read the existing bulk Replay code before writing anything, so I could match it instead of guessing at a design. Tracing the bug through the Vue component, the Pinia store, and the Micronaut controller taught me how the frontend and backend hand off to each other — and the store quietly dropping the query params turned out to be the key detail that made the whole feature impossible from the UI. I also learned how a large project keeps API and UI in sync (OpenAPI annotations on the controller, generated client, i18n keys, and `Ks*` design-system components), and that matching those conventions is as much a part of a contribution as the code itself.
+
+**What I'd do differently.** I'd surface the backend reviewer earlier. The frontend was approved in a day, but the backend sat for roughly six weeks waiting on a reviewer who had to be pinged twice. Next time I'd flag in the PR description exactly which files need backend eyes and proactively @mention a backend maintainer up front, rather than leaving reviewer routing entirely to the coordinator. I'd also add the before/after UI screenshot directly in the PR body instead of relying on the description of the dialog, to make the change reviewable at a glance.
+
+**Teachable insight for future cohorts.** The hardest part of a "good first issue" wasn't the code — it was keeping a small PR alive across a long review queue. A change that's approved on the frontend can still stall for weeks on the backend, and a PR that isn't kept in sync with the fast-moving `develop` branch quietly rots into merge conflicts and gets deprioritized. The lesson: pick an issue that already has a working sibling pattern to copy, keep the diff small, and treat "keep the branch mergeable and the reviewers reminded" as part of the job — not something that happens automatically after you push.
 
 ## Links
 
